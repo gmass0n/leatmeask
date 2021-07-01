@@ -2,6 +2,7 @@
   "name": "letmeask",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "dependencies": {
     "firebase": "^8.6.8",
     "react": "^17.0.2",
