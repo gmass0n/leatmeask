@@ -24,15 +24,32 @@ export const LeftBox = styled.aside`
 
   strong {
     font: 700 36px "Poppins", sans-serif;
+    margin-top: 8px;
     line-height: 42px;
-    margin-top: 16px;
+    color: ${({ theme }) => theme.colors.heading};
   }
 
   p {
     font-size: 24px;
     line-height: 32px;
-    margin-top: 36px;
+    margin-top: 16px;
     color: ${({ theme }) => theme.colors.subheading};
+  }
+
+  @media (max-width: 1000px) {
+    padding: 115px 40px;
+
+    strong {
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 880px) {
+    display: none;
   }
 `;
 
@@ -61,6 +78,7 @@ export const RightBox = styled.main`
     h2 {
       font-size: 24px;
       margin: 56px 0 24px;
+      font-weight: 700;
       font-family: "Poppins", sans-serif;
       color: ${({ theme }) => theme.colors.dark};
     }
@@ -74,6 +92,16 @@ export const RightBox = styled.main`
         color: ${({ theme }) => theme.colors.dark};
         background: ${({ theme }) => theme.colors.shape};
         border: 1px solid ${({ theme }) => theme.colors.gray};
+
+        transition: all 0.3s;
+
+        &::placeholder {
+          color: ${({ theme }) => theme.colors.gray};
+        }
+
+        &:focus {
+          border-color: ${({ theme }) => theme.colors.primary};
+        }
       }
 
       button {
@@ -90,7 +118,7 @@ export const RightBox = styled.main`
       a {
         color: ${({ theme }) => theme.colors.secondary};
 
-        transition: filter 0.2s;
+        transition: filter 0.3s;
 
         &:hover {
           filter: brightness(0.8);

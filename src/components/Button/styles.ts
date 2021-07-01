@@ -1,11 +1,16 @@
 import styled from "styled-components";
 
-export const Container = styled.button`
-  margin-top: 64px;
+import { ButtonVariant } from ".";
+
+interface ContainerProps {
+  variant: ButtonVariant;
+}
+
+export const Container = styled.button<ContainerProps>`
   height: 50px;
   border-radius: 8px;
   font-weight: 500;
-  background: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme, variant }) => theme.colors[variant]};
   color: ${({ theme }) => theme.colors.heading};
   padding: 0 32px;
 
@@ -16,7 +21,7 @@ export const Container = styled.button`
   cursor: pointer;
   border: 0;
 
-  transition: filter 0.2s;
+  transition: all 0.2s;
 
   img {
     margin-right: 8px;
@@ -28,7 +33,7 @@ export const Container = styled.button`
   }
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.75;
     cursor: not-allowed;
   }
 `;

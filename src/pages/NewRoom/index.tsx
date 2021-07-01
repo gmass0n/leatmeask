@@ -1,13 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
 
 import illustrationImg from "../../assets/images/illustration.svg";
 import logoImg from "../../assets/images/logo.svg";
 
 import { Button } from "../../components/Button";
+import { useAuth } from "../../hooks/auth";
 
 import { Container, LeftBox, RightBox } from "./styles";
+import { useEffect } from "react";
 
 export const NewRoom: React.FC = () => {
+  const history = useHistory();
+  const toast = useToast();
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      toast({
+        title: "Ops, ocorreu um imprevisto!",
+        description: "Você precisa esta logado para criar uma nova sala.",
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      });
+
+      history.push("/");
+    }
+  }, [user, toast, history]);
+
   return (
     <Container>
       <LeftBox>
@@ -16,9 +38,9 @@ export const NewRoom: React.FC = () => {
           alt="Ilustração simbolizando perguntas e respostas"
         />
 
-        <strong>Crie salas de Q&amp;A ao-vivo</strong>
+        <strong>Toda pergunta tem uma resposta.</strong>
 
-        <p>Tire as dúvidas da sua audiência em tempo-real</p>
+        <p>Aprenda e compartilhe conhecimento com outras pessoas</p>
       </LeftBox>
 
       <RightBox>

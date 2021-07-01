@@ -13,7 +13,9 @@ export const LeftBox = styled.aside`
   flex-direction: column;
   justify-content: center;
 
-  padding: 120px 80px;
+  overflow: hidden;
+
+  padding: 115px 80px;
 
   background: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.heading};
@@ -24,15 +26,32 @@ export const LeftBox = styled.aside`
 
   strong {
     font: 700 36px "Poppins", sans-serif;
+    margin-top: 8px;
     line-height: 42px;
-    margin-top: 16px;
+    color: ${({ theme }) => theme.colors.heading};
   }
 
   p {
     font-size: 24px;
     line-height: 32px;
-    margin-top: 36px;
+    margin-top: 16px;
     color: ${({ theme }) => theme.colors.subheading};
+  }
+
+  @media (max-width: 1000px) {
+    padding: 115px 40px;
+
+    strong {
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 880px) {
+    display: none;
   }
 `;
 
@@ -56,6 +75,7 @@ export const RightBox = styled.main`
 
     > img {
       align-self: center;
+      margin-bottom: 56px;
     }
 
     form {
@@ -67,6 +87,10 @@ export const RightBox = styled.main`
         color: ${({ theme }) => theme.colors.dark};
         background: ${({ theme }) => theme.colors.shape};
         border: 1px solid ${({ theme }) => theme.colors.gray};
+
+        &::placeholder {
+          color: ${({ theme }) => theme.colors.gray};
+        }
       }
 
       button {
@@ -74,33 +98,6 @@ export const RightBox = styled.main`
         margin-top: 16px;
       }
     }
-  }
-`;
-
-export const CreateRoomButton = styled.button`
-  margin-top: 56px;
-  height: 50px;
-  border-radius: 8px;
-  font-weight: 500;
-  background: ${({ theme }) => theme.colors.danger};
-  color: ${({ theme }) => theme.colors.heading};
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  border: 0;
-
-  transition: filter 0.2s;
-
-  img {
-    margin-right: 8px;
-    height: 22px;
-  }
-
-  &:hover {
-    filter: brightness(0.9);
   }
 `;
 
