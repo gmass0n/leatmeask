@@ -1,3 +1,5 @@
+import { useHistory } from "react-router-dom";
+
 import illustrationImg from "../../assets/images/illustration.svg";
 import logoImg from "../../assets/images/logo.svg";
 import googleIconImg from "../../assets/images/google-icon.svg";
@@ -13,6 +15,12 @@ import {
 } from "./styles";
 
 export const Home: React.FC = () => {
+  const history = useHistory();
+
+  function handleNavigateToNewRoom(): void {
+    history.push("/rooms/new");
+  }
+
   return (
     <Container>
       <LeftBox>
@@ -30,7 +38,7 @@ export const Home: React.FC = () => {
         <div>
           <img src={logoImg} alt="Letmeask" />
 
-          <CreateRoomButton type="button">
+          <CreateRoomButton type="button" onClick={handleNavigateToNewRoom}>
             <img src={googleIconImg} alt="Logo do Google" />
             Crie sua sala com o Google
           </CreateRoomButton>
