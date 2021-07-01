@@ -12,7 +12,7 @@ import {
   Separator,
 } from "./styles";
 
-export const Auth: React.FC = () => {
+export const Home: React.FC = () => {
   return (
     <Container>
       <LeftBox>

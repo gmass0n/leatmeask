@@ -64,8 +64,9 @@ export const RightBox = styled.main`
         height: 50px;
         border-radius: 8px;
         padding: 0 16px;
-        color: ${({ theme }) => theme.colors.shape};
-        border: 1px solid ${({ theme }) => theme.colors.grey};
+        color: ${({ theme }) => theme.colors.dark};
+        background: ${({ theme }) => theme.colors.shape};
+        border: 1px solid ${({ theme }) => theme.colors.gray};
       }
 
       button {
@@ -77,11 +78,11 @@ export const RightBox = styled.main`
 `;
 
 export const CreateRoomButton = styled.button`
-  margin-top: 64px;
+  margin-top: 56px;
   height: 50px;
   border-radius: 8px;
   font-weight: 500;
-  background: ${({ theme }) => theme.colors.red};
+  background: ${({ theme }) => theme.colors.danger};
   color: ${({ theme }) => theme.colors.heading};
 
   display: flex;
@@ -108,7 +109,7 @@ export const Separator = styled.div`
   align-items: center;
 
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.grey};
+  color: ${({ theme }) => theme.colors.gray};
 
   margin: 32px 0;
 
@@ -116,7 +117,7 @@ export const Separator = styled.div`
     content: "";
     flex: 1;
     height: 1px;
-    background: ${({ theme }) => theme.colors.grey};
+    background: ${({ theme }) => theme.colors.gray};
     margin-right: 16px;
   }
 
@@ -124,7 +125,7 @@ export const Separator = styled.div`
     content: "";
     flex: 1;
     height: 1px;
-    background: ${({ theme }) => theme.colors.grey};
+    background: ${({ theme }) => theme.colors.gray};
     margin-left: 16px;
   }
 `;
