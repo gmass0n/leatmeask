@@ -1,11 +1,4 @@
-import { extendTheme } from "@chakra-ui/react";
-
-// export const theme = {
-
-// };
-
-// 2. Call `extendTheme` and pass your custom values
-export const theme = extendTheme({
+export const theme = {
   colors: {
     primary: "#835afd",
     secondary: "#e559f9",
@@ -18,4 +11,4 @@ export const theme = extendTheme({
     background: "#f8f8f8",
     dark: "#29292e",
   },
-});
+};
