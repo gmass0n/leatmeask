@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from "react";
+import { FC, FormEvent, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
@@ -14,7 +14,7 @@ import { database } from "../../services/firebase";
 
 import { Container, LeftBox, RightBox, Separator } from "./styles";
 
-export const Home: React.FC = () => {
+export const Home: FC = () => {
   const { user, signInWithGoogle } = useAuth();
 
   const toast = useToast();
@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
           position: "top-right",
           isClosable: true,
         });
-      } finally {
+
         setIsSigningWithGoogle(false);
       }
     }
@@ -57,7 +57,10 @@ export const Home: React.FC = () => {
 
       const roomCode = roomCodeRef.current?.value;
 
-      if (roomCode?.trim() === "") return;
+      if (roomCode?.trim() === "") {
+        setIsJoiningRoom(false);
+        return;
+      }
 
       const roomRef = await database.ref(`rooms/${roomCode}`).get();
 
@@ -69,6 +72,8 @@ export const Home: React.FC = () => {
           position: "top-right",
           isClosable: true,
         });
+
+        setIsJoiningRoom(false);
         return;
       }
 
@@ -81,7 +86,7 @@ export const Home: React.FC = () => {
         position: "top-right",
         isClosable: true,
       });
-    } finally {
+
       setIsJoiningRoom(false);
     }
   }

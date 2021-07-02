@@ -1,5 +1,5 @@
+import { FC } from "react";
 import { Tooltip } from "@chakra-ui/react";
-import React from "react";
 
 import copyImg from "../../assets/images/copy.svg";
 
@@ -9,7 +9,7 @@ interface RoomCodeProps {
   code: string;
 }
 
-export const RoomCode: React.FC<RoomCodeProps> = ({ code }) => {
+export const RoomCode: FC<RoomCodeProps> = ({ code }) => {
   function handleCopyRoomCodeToClipboard(): void {
     navigator.clipboard.writeText(code);
   }

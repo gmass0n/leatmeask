@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, FC, useCallback, useContext, useState } from "react";
 
 import { auth, firebase } from "../services/firebase";
 
@@ -16,7 +16,7 @@ interface IAuthContextData {
 
 const AuthContext = createContext({} as IAuthContextData);
 
-const AuthProvider: React.FC = ({ children }) => {
+const AuthProvider: FC = ({ children }) => {
   const [user, setUser] = useState<User | undefined>(() => {
     const storagedUser = localStorage.getItem("@letmeask:user");
 

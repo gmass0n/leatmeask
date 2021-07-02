@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
@@ -13,7 +13,7 @@ import { database } from "../../services/firebase";
 
 import { Container, LeftBox, RightBox } from "./styles";
 
-export const NewRoom: React.FC = () => {
+export const NewRoom: FC = () => {
   const { user } = useAuth();
 
   const history = useHistory();
@@ -40,14 +40,17 @@ export const NewRoom: React.FC = () => {
   async function handleCreateRoom(
     event: FormEvent<HTMLFormElement>
   ): Promise<void> {
-    event.preventDefault();
-
     try {
+      event.preventDefault();
+
       setIsCreatingRoom(true);
 
       const newRoom = newRoomRef.current?.value;
 
-      if (newRoom?.trim() === "") return;
+      if (newRoom?.trim() === "") {
+        setIsCreatingRoom(false);
+        return;
+      }
 
       const roomRef = database.ref("rooms");
 
@@ -65,7 +68,7 @@ export const NewRoom: React.FC = () => {
         position: "top-right",
         isClosable: true,
       });
-    } finally {
+
       setIsCreatingRoom(false);
     }
   }

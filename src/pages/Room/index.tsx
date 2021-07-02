@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
@@ -38,7 +38,7 @@ interface ParamsProps {
   id: string;
 }
 
-export const Room: React.FC = () => {
+export const Room: FC = () => {
   const { user } = useAuth();
 
   const params = useParams<ParamsProps>();
