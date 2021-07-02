@@ -12,13 +12,14 @@ import { useAuth } from "../../hooks/auth";
 import { database } from "../../services/firebase";
 
 import { Container, Header, Content } from "./styles";
+import { Question } from "../../components/Question";
 
 interface QuestionAuthor {
   name: string;
   avatar: string;
 }
 
-interface Question {
+interface QuestionProps {
   id: string;
   author: QuestionAuthor;
   content: string;
@@ -26,7 +27,7 @@ interface Question {
   isAnswered: boolean;
 }
 
-type FirebaseQuestions = Record<string, Omit<Question, "id">>;
+type FirebaseQuestions = Record<string, Omit<QuestionProps, "id">>;
 
 interface FirebaseRoom {
   questions: FirebaseQuestions;
@@ -50,7 +51,7 @@ export const Room: FC = () => {
   const [isSendingNewQuestion, setIsSendingNewQuestion] = useState(false);
   const [isLoadingRoom, setIsLoadingRoom] = useState(true);
   const [roomTitle, setRoomTitle] = useState<string>("");
-  const [roomQuestions, setRoomQuestions] = useState<Question[]>([]);
+  const [roomQuestions, setRoomQuestions] = useState<QuestionProps[]>([]);
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${params.id}`);
@@ -81,7 +82,7 @@ export const Room: FC = () => {
             author: value.author,
             isHighlighted: value.isHighlighted,
             isAnswered: value.isAnswered,
-          } as Question;
+          } as QuestionProps;
         }
       );
 
@@ -204,6 +205,16 @@ export const Room: FC = () => {
                   </Button>
                 </footer>
               </form>
+
+              <ul>
+                {roomQuestions.map((question) => (
+                  <Question
+                    key={question.id}
+                    author={question.author}
+                    content={question.content}
+                  />
+                ))}
+              </ul>
             </>
           )}
         </Content>

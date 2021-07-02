@@ -177,10 +177,6 @@ export const Content = styled.div`
             width: 28px;
             height: 28px;
           }
-
-          span {
-            font-size: 14px;
-          }
         }
 
         > button {
@@ -188,5 +184,9 @@ export const Content = styled.div`
         }
       }
     }
+  }
+
+  > ul {
+    margin-top: 32px;
   }
 `;
