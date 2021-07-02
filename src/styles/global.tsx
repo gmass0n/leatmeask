@@ -8,8 +8,13 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body, #root, html {
+    display: flex;
+    flex-direction: column;
+
     background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.dark};
+    width: 100%;
+    height: 100%;
   }
 
   body, #root, html, input, button, textarea {

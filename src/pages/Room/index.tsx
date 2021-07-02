@@ -1,6 +1,6 @@
 import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { Tooltip, useToast } from "@chakra-ui/react";
+import { Tooltip, useToast, Spinner } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
 
@@ -48,6 +48,7 @@ export const Room: FC = () => {
   const newQuestionRef = useRef<HTMLTextAreaElement>(null);
 
   const [isSendingNewQuestion, setIsSendingNewQuestion] = useState(false);
+  const [isLoadingRoom, setIsLoadingRoom] = useState(true);
   const [roomTitle, setRoomTitle] = useState<string>("");
   const [roomQuestions, setRoomQuestions] = useState<Question[]>([]);
 
@@ -84,6 +85,7 @@ export const Room: FC = () => {
         }
       );
 
+      setIsLoadingRoom(false);
       setRoomTitle(firebaseRoom.title);
       setRoomQuestions(parsedQuestions);
     });
@@ -152,50 +154,60 @@ export const Room: FC = () => {
         </div>
       </Header>
 
-      <Content>
-        <header>
-          <div>
-            <h1>Sala {roomTitle}</h1>
-          </div>
+      <main>
+        <Content>
+          {isLoadingRoom ? (
+            <div className="loading-wrapper">
+              <Spinner size="lg" thickness="3px" color="primary" />
+            </div>
+          ) : (
+            <>
+              <header>
+                <div>
+                  <h1>Sala {roomTitle}</h1>
+                </div>
 
-          {roomQuestions.length > 0 && (
-            <span>
-              {roomQuestions.length}{" "}
-              {roomQuestions.length === 1 ? "pergunta" : "perguntas"}
-            </span>
+                {roomQuestions.length > 0 && (
+                  <span>
+                    {roomQuestions.length}{" "}
+                    {roomQuestions.length === 1 ? "pergunta" : "perguntas"}
+                  </span>
+                )}
+              </header>
+
+              <form onSubmit={handleSendNewQuestion}>
+                <textarea
+                  placeholder="O que você quer perguntar?"
+                  ref={newQuestionRef}
+                />
+
+                <footer>
+                  {user ? (
+                    <div>
+                      <img src={user.avatar} alt={user.name} />
+
+                      <span>{user.name}</span>
+                    </div>
+                  ) : (
+                    <span>
+                      Para enviar uma pergunta,{" "}
+                      <button type="button">faça seu login</button>
+                    </span>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={!user}
+                    isLoading={isSendingNewQuestion}
+                  >
+                    Enviar pergunta
+                  </Button>
+                </footer>
+              </form>
+            </>
           )}
-        </header>
-
-        <form onSubmit={handleSendNewQuestion}>
-          <textarea
-            placeholder="O que você quer perguntar?"
-            ref={newQuestionRef}
-          />
-
-          <footer>
-            {user ? (
-              <div>
-                <img src={user.avatar} alt={user.name} />
-
-                <span>{user.name}</span>
-              </div>
-            ) : (
-              <span>
-                Para enviar uma pergunta,{" "}
-                <button type="button">faça seu login</button>
-              </span>
-            )}
-
-            <Button
-              type="submit"
-              disabled={!user}
-              isLoading={isSendingNewQuestion}
-            >
-              Enviar pergunta
-            </Button>
-          </footer>
-        </form>
-      </Content>
+        </Content>
+      </main>
     </Container>
   );
 };

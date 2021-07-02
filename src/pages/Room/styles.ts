@@ -1,6 +1,17 @@
 import styled from "styled-components";
 
-export const Container = styled.div``;
+export const Container = styled.div`
+  flex: 1;
+
+  main {
+    max-height: calc(100vh - 94px);
+    overflow: auto;
+
+    @media (max-width: 550px) {
+      max-height: calc(100vh - 87px);
+    }
+  }
+`;
 
 export const Header = styled.header`
   padding: 24px;
@@ -33,10 +44,17 @@ export const Header = styled.header`
   }
 `;
 
-export const Content = styled.main`
+export const Content = styled.div`
   max-width: 800px;
   padding: 24px;
   margin: 0 auto;
+
+  .loading-wrapper {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 64px;
+  }
 
   > header {
     display: flex;
