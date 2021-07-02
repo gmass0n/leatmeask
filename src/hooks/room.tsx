@@ -2,21 +2,38 @@ import { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { database } from "../services/firebase";
 import { useHistory } from "react-router-dom";
+import { useAuth } from "./auth";
+
+interface QuestionLike {
+  authorId: string;
+}
 
 interface QuestionAuthor {
   name: string;
   avatar: string;
 }
 
-interface QuestionProps {
+export interface QuestionProps {
   id: string;
   author: QuestionAuthor;
   content: string;
   isHighlighted: boolean;
   isAnswered: boolean;
+  likesCount: number;
+  likeId: string | undefined;
 }
 
-type FirebaseQuestions = Record<string, Omit<QuestionProps, "id">>;
+type FirebaseLikes = Record<string, QuestionLike>;
+
+interface FirebaseQuestion {
+  author: QuestionAuthor;
+  content: string;
+  isHighlighted: boolean;
+  isAnswered: boolean;
+  likes: FirebaseLikes;
+}
+
+type FirebaseQuestions = Record<string, FirebaseQuestion>;
 
 interface FirebaseRoom {
   questions: FirebaseQuestions;
@@ -33,6 +50,8 @@ interface UseRoomResponse {
 export const useRoom = (roomId: string): UseRoomResponse => {
   const toast = useToast();
   const history = useHistory();
+
+  const { user } = useAuth();
 
   const [title, setTitle] = useState<string>("");
   const [questions, setQuestions] = useState<QuestionProps[]>([]);
@@ -63,12 +82,19 @@ export const useRoom = (roomId: string): UseRoomResponse => {
 
       const parsedQuestions = Object.entries(firebaseQuestions).map(
         ([key, value]) => {
+          const parsedLikes = Object.values(value.likes ?? {});
+          const likeId = Object.entries(value.likes ?? {}).find(
+            ([key, like]) => like.authorId === user?.id
+          )?.[0];
+
           return {
             id: key,
             content: value.content,
             author: value.author,
             isHighlighted: value.isHighlighted,
             isAnswered: value.isAnswered,
+            likesCount: parsedLikes.length,
+            likeId,
           } as QuestionProps;
         }
       );
@@ -77,8 +103,12 @@ export const useRoom = (roomId: string): UseRoomResponse => {
       setTitle(firebaseRoom.title);
       setQuestions(parsedQuestions);
     });
+
+    return () => {
+      roomRef.off("value");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId]);
+  }, [roomId, user]);
 
   return {
     questions,

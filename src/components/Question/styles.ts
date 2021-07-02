@@ -1,4 +1,9 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+interface QuestionButtonProps {
+  variant?: "like";
+  isActive?: boolean;
+}
 
 export const Container = styled.li`
   background: ${({ theme }) => theme.colors.shape};
@@ -24,7 +29,7 @@ export const Container = styled.li`
 
     margin-top: 24px;
 
-    > div {
+    div:first-child {
       display: flex;
       align-items: center;
 
@@ -57,8 +62,44 @@ export const Container = styled.li`
         }
       }
     }
+  }
+`;
 
-    > ul {
-    }
+export const QuestionButton = styled.button.attrs({
+  type: "button",
+})<QuestionButtonProps>`
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  transition: all 0.3s;
+
+  ${({ variant, theme, isActive }) =>
+    variant === "like" &&
+    css`
+      display: flex;
+      align-items: center;
+      color: ${theme.colors.darkGray};
+
+      span {
+        margin-top: 8px;
+      }
+
+      svg {
+        margin-left: 8px;
+      }
+
+      ${isActive &&
+      css`
+        color: ${theme.colors.primary};
+
+        svg path {
+          stroke: ${theme.colors.primary};
+        }
+      `}
+    `}
+
+  &:hover {
+    filter: brightness(0.75);
   }
 `;

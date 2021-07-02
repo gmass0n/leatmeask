@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Container } from "./styles";
 
 interface QuestionAuthor {
@@ -12,7 +10,11 @@ interface QuestionProps {
   author: QuestionAuthor;
 }
 
-export const Question: React.FC<QuestionProps> = ({ content, author }) => {
+export const Question: React.FC<QuestionProps> = ({
+  content,
+  author,
+  children,
+}) => {
   return (
     <Container>
       <p>{content}</p>
@@ -24,7 +26,7 @@ export const Question: React.FC<QuestionProps> = ({ content, author }) => {
           <span>{author.name}</span>
         </div>
 
-        <ul></ul>
+        <div>{children}</div>
       </footer>
     </Container>
   );
