@@ -1,13 +1,6 @@
 import { FC, useRef, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
-import {
-  Tooltip,
-  Spinner,
-  useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-} from "@chakra-ui/react";
+import { Tooltip, Spinner, useToast } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
 import powerImg from "../../assets/images/power.svg";
@@ -23,7 +16,11 @@ import { useRoom } from "../../hooks/room";
 
 import { database } from "../../services/firebase";
 
-import { Container, Header, Content, CloseRoomModalContent } from "./styles";
+import { Container, Header, Content } from "./styles";
+import {
+  ConfirmModal,
+  ConfirmModalHandles,
+} from "../../components/ConfirmModal";
 
 interface ParamsProps {
   id: string;
@@ -34,12 +31,14 @@ export const AdminRoom: FC = () => {
   const history = useHistory();
   const toast = useToast();
 
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const closeRoomModalRef = useRef<ConfirmModalHandles>(null);
+  const deleteQuestionModalRef = useRef<ConfirmModalHandles>(null);
 
   const { isLoading, questions, title } = useRoom(params.id);
 
   const [isClosingRoom, setIsClosingRoom] = useState(false);
-  const [isCloseRoomModalOpen, setIsCloseRoomModalOpen] = useState(false);
+  const [isDeletingQuestion, setIsDeletingQuestion] = useState(false);
+  const [currentQuestionId, setCurrentQuestionId] = useState("");
 
   async function handleCloseRoom(): Promise<void> {
     try {
@@ -63,17 +62,31 @@ export const AdminRoom: FC = () => {
     }
   }
 
-  function handleOpenCloseRoomModal(): void {
-    setIsCloseRoomModalOpen(true);
+  function handleOpenDeleteQuestionModal(questionId: string): void {
+    setCurrentQuestionId(questionId);
+    deleteQuestionModalRef.current?.open();
   }
 
-  function handleCloseCloseRoomModal(): void {
-    setIsCloseRoomModalOpen(false);
-  }
+  async function handleDeleteQuestion(): Promise<void> {
+    try {
+      setIsDeletingQuestion(true);
 
-  async function handleDeleteQuestion(questionId: string): Promise<void> {
-    if (window.confirm("Tem certeza que você deseja excluir esta pergunta?")) {
-      await database.ref(`rooms/${params.id}/questions/${questionId}`).remove();
+      await database
+        .ref(`rooms/${params.id}/questions/${currentQuestionId}`)
+        .remove();
+
+      setCurrentQuestionId("");
+      deleteQuestionModalRef.current?.close();
+    } catch (error) {
+      toast({
+        title: "Ops, ocorreu um erro!",
+        description: "Não foi possível remover essa pergunta.",
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      });
+    } finally {
+      setIsDeletingQuestion(false);
     }
   }
 
@@ -90,7 +103,7 @@ export const AdminRoom: FC = () => {
           <div>
             <RoomCode code={params.id} />
 
-            <Button isOutlined onClick={handleOpenCloseRoomModal}>
+            <Button isOutlined onClick={closeRoomModalRef.current?.open}>
               <img src={powerImg} alt="Sign out" />
               <span>Encerrar sala</span>
             </Button>
@@ -128,7 +141,9 @@ export const AdminRoom: FC = () => {
                   >
                     <Tooltip hasArrow label="Remover">
                       <QuestionButton
-                        onClick={() => handleDeleteQuestion(question.id)}
+                        onClick={() =>
+                          handleOpenDeleteQuestionModal(question.id)
+                        }
                         aria-label="Remover pergunta"
                       >
                         <img src={deleteImg} alt="Remover pergunta" />
@@ -142,40 +157,25 @@ export const AdminRoom: FC = () => {
         </Content>
       </main>
 
-      <AlertDialog
-        isOpen={isCloseRoomModalOpen}
-        onClose={handleCloseCloseRoomModal}
-        leastDestructiveRef={cancelRef}
-        size="xl"
-        motionPreset="slideInBottom"
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <CloseRoomModalContent>
-              <img src={closeImg} alt="Remove question" />
+      <ConfirmModal
+        ref={closeRoomModalRef}
+        isConfirming={isClosingRoom}
+        icon={closeImg}
+        onConfirm={handleCloseRoom}
+        title="Encerrar sala"
+        description="Tem certeza que você deseja encerrar esta sala?"
+        confirmText="Sim, encerrar"
+      />
 
-              <h1>Encerrar sala</h1>
-
-              <p>Tem certeza que você deseja encerrar esta sala?</p>
-
-              <div>
-                <Button ref={cancelRef} onClick={handleCloseCloseRoomModal}>
-                  Cancelar
-                </Button>
-
-                <Button
-                  variant="danger"
-                  onClick={handleCloseRoom}
-                  isLoading={isClosingRoom}
-                >
-                  Sim, encerrar
-                </Button>
-              </div>
-            </CloseRoomModalContent>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      <ConfirmModal
+        ref={deleteQuestionModalRef}
+        isConfirming={isDeletingQuestion}
+        icon={closeImg}
+        onConfirm={handleDeleteQuestion}
+        title="Remover pergunta"
+        description="Tem certeza que você deseja remover essa pergunta?"
+        confirmText="Sim, remover"
+      />
     </Container>
   );
 };
