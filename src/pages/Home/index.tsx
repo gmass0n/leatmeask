@@ -77,6 +77,19 @@ export const Home: FC = () => {
         return;
       }
 
+      if (roomRef.val().closedAt) {
+        toast({
+          title: "Ops, ocorreu um imprevisto!",
+          description: "Essa sala já foi encerrada.",
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+
+        setIsJoiningRoom(false);
+        return;
+      }
+
       history.push(`/rooms/${roomCode}`);
     } catch (error) {
       toast({

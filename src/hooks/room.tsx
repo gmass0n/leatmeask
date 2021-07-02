@@ -39,6 +39,7 @@ interface FirebaseRoom {
   questions: FirebaseQuestions;
   authorId: string;
   title: string;
+  closedAt?: string;
 }
 
 interface UseRoomResponse {
@@ -61,6 +62,24 @@ export const useRoom = (roomId: string): UseRoomResponse => {
     setIsLoading(true);
 
     const roomRef = database.ref(`rooms/${roomId}`);
+
+    roomRef.once("value", (snapshot) => {
+      const firebaseRoom = snapshot.val() as FirebaseRoom | null;
+
+      if (firebaseRoom?.closedAt) {
+        toast({
+          title: "Ops, ocorreu um imprevisto!",
+          description:
+            "A sala que você está tentando acessar já foi encerrada.",
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+
+        history.push("/");
+        return;
+      }
+    });
 
     roomRef.on("value", (snapshot) => {
       const firebaseRoom = snapshot.val() as FirebaseRoom | null;
