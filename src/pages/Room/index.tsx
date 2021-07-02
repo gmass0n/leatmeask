@@ -1,5 +1,5 @@
-import { FC, FormEvent, useEffect, useRef, useState } from "react";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { FC, FormEvent, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Tooltip, useToast, Spinner } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
@@ -13,85 +13,23 @@ import { database } from "../../services/firebase";
 
 import { Container, Header, Content } from "./styles";
 import { Question } from "../../components/Question";
-
-interface QuestionAuthor {
-  name: string;
-  avatar: string;
-}
-
-interface QuestionProps {
-  id: string;
-  author: QuestionAuthor;
-  content: string;
-  isHighlighted: boolean;
-  isAnswered: boolean;
-}
-
-type FirebaseQuestions = Record<string, Omit<QuestionProps, "id">>;
-
-interface FirebaseRoom {
-  questions: FirebaseQuestions;
-  authorId: string;
-  title: string;
-}
+import { useRoom } from "../../hooks/room";
 
 interface ParamsProps {
   id: string;
 }
 
 export const Room: FC = () => {
-  const { user } = useAuth();
-
   const params = useParams<ParamsProps>();
-  const history = useHistory();
+
+  const { user } = useAuth();
+  const { isLoading, questions, title } = useRoom(params.id);
+
   const toast = useToast();
 
   const newQuestionRef = useRef<HTMLTextAreaElement>(null);
 
   const [isSendingNewQuestion, setIsSendingNewQuestion] = useState(false);
-  const [isLoadingRoom, setIsLoadingRoom] = useState(true);
-  const [roomTitle, setRoomTitle] = useState<string>("");
-  const [roomQuestions, setRoomQuestions] = useState<QuestionProps[]>([]);
-
-  useEffect(() => {
-    const roomRef = database.ref(`rooms/${params.id}`);
-
-    roomRef.on("value", (snapshot) => {
-      const firebaseRoom = snapshot.val() as FirebaseRoom | null;
-
-      if (!firebaseRoom || !firebaseRoom.authorId) {
-        toast({
-          title: "Ops, ocorreu um imprevisto!",
-          description: "A sala que você está tentando acessar não existe.",
-          status: "error",
-          position: "top-right",
-          isClosable: true,
-        });
-
-        history.push("/");
-        return;
-      }
-
-      const firebaseQuestions = firebaseRoom.questions ?? {};
-
-      const parsedQuestions = Object.entries(firebaseQuestions).map(
-        ([key, value]) => {
-          return {
-            id: key,
-            content: value.content,
-            author: value.author,
-            isHighlighted: value.isHighlighted,
-            isAnswered: value.isAnswered,
-          } as QuestionProps;
-        }
-      );
-
-      setIsLoadingRoom(false);
-      setRoomTitle(firebaseRoom.title);
-      setRoomQuestions(parsedQuestions);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id]);
 
   async function handleSendNewQuestion(
     event: FormEvent<HTMLFormElement>
@@ -157,7 +95,7 @@ export const Room: FC = () => {
 
       <main>
         <Content>
-          {isLoadingRoom ? (
+          {isLoading ? (
             <div className="loading-wrapper">
               <Spinner size="lg" thickness="3px" color="primary" />
             </div>
@@ -165,13 +103,13 @@ export const Room: FC = () => {
             <>
               <header>
                 <div>
-                  <h1>Sala {roomTitle}</h1>
+                  <h1>Sala {title}</h1>
                 </div>
 
-                {roomQuestions.length > 0 && (
+                {questions.length > 0 && (
                   <span>
-                    {roomQuestions.length}{" "}
-                    {roomQuestions.length === 1 ? "pergunta" : "perguntas"}
+                    {questions.length}{" "}
+                    {questions.length === 1 ? "pergunta" : "perguntas"}
                   </span>
                 )}
               </header>
@@ -207,7 +145,7 @@ export const Room: FC = () => {
               </form>
 
               <ul>
-                {roomQuestions.map((question) => (
+                {questions.map((question) => (
                   <Question
                     key={question.id}
                     author={question.author}
