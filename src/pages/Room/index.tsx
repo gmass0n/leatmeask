@@ -1,5 +1,5 @@
-import { FormEvent, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
@@ -9,8 +9,30 @@ import { RoomCode } from "../../components/RoomCode";
 
 import { useAuth } from "../../hooks/auth";
 
-import { Container, Header, Content } from "./styles";
 import { database } from "../../services/firebase";
+
+import { Container, Header, Content } from "./styles";
+
+interface QuestionAuthor {
+  name: string;
+  avatar: string;
+}
+
+interface Question {
+  id: string;
+  author: QuestionAuthor;
+  content: string;
+  isHighlighted: boolean;
+  isAnswered: boolean;
+}
+
+type FirebaseQuestions = Record<string, Omit<Question, "id">>;
+
+interface FirebaseRoom {
+  questions: FirebaseQuestions;
+  authorId: string;
+  title: string;
+}
 
 interface ParamsProps {
   id: string;
@@ -20,11 +42,53 @@ export const Room: React.FC = () => {
   const { user } = useAuth();
 
   const params = useParams<ParamsProps>();
+  const history = useHistory();
   const toast = useToast();
 
   const newQuestionRef = useRef<HTMLTextAreaElement>(null);
 
   const [isSendingNewQuestion, setIsSendingNewQuestion] = useState(false);
+  const [roomTitle, setRoomTitle] = useState<string>("");
+  const [roomQuestions, setRoomQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    const roomRef = database.ref(`rooms/${params.id}`);
+
+    roomRef.on("value", (snapshot) => {
+      const firebaseRoom = snapshot.val() as FirebaseRoom | null;
+
+      if (!firebaseRoom || !firebaseRoom.authorId) {
+        toast({
+          title: "Ops, ocorreu um imprevisto!",
+          description: "A sala que você está tentando acessar não existe.",
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+
+        history.push("/");
+        return;
+      }
+
+      const firebaseQuestions = firebaseRoom.questions ?? {};
+
+      const parsedQuestions = Object.entries(firebaseQuestions).map(
+        ([key, value]) => {
+          return {
+            id: key,
+            content: value.content,
+            author: value.author,
+            isHighlighted: value.isHighlighted,
+            isAnswered: value.isAnswered,
+          } as Question;
+        }
+      );
+
+      setRoomTitle(firebaseRoom.title);
+      setRoomQuestions(parsedQuestions);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   async function handleSendNewQuestion(
     event: FormEvent<HTMLFormElement>
@@ -87,10 +151,15 @@ export const Room: React.FC = () => {
       <Content>
         <header>
           <div>
-            <h1>Sala React</h1>
+            <h1>Sala {roomTitle}</h1>
           </div>
 
-          <span>4 perguntas</span>
+          {roomQuestions.length > 0 && (
+            <span>
+              {roomQuestions.length}{" "}
+              {roomQuestions.length === 1 ? "pergunta" : "perguntas"}
+            </span>
+          )}
         </header>
 
         <form onSubmit={handleSendNewQuestion}>
