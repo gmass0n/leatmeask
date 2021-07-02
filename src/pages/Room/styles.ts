@@ -14,12 +14,20 @@ export const Header = styled.header`
     max-width: 1120px;
     margin: 0 auto;
 
-    > img {
-      max-height: 45px;
-      margin-right: 48px;
+    > a {
+      transition: all 0.4s;
 
-      @media (max-width: 550px) {
-        max-height: 38px;
+      img {
+        max-height: 45px;
+        margin-right: 48px;
+
+        @media (max-width: 550px) {
+          max-height: 38px;
+        }
+      }
+
+      &:hover {
+        filter: brightness(0.8);
       }
     }
   }

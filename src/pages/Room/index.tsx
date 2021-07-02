@@ -1,6 +1,6 @@
 import { FC, FormEvent, useEffect, useRef, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
+import { Link, useHistory, useParams } from "react-router-dom";
+import { Tooltip, useToast } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
 
@@ -142,7 +142,11 @@ export const Room: FC = () => {
     <Container>
       <Header>
         <div>
-          <img src={logoImg} alt="Letmeask" />
+          <Tooltip hasArrow label="Volta para o início">
+            <Link to="/">
+              <img src={logoImg} alt="Letmeask" />
+            </Link>
+          </Tooltip>
 
           <RoomCode code={params.id} />
         </div>
