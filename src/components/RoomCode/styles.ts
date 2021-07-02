@@ -43,4 +43,18 @@ export const Container = styled.button`
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  @media (max-width: 550px) {
+    height: 35px;
+
+    > div {
+      img {
+        height: 18px;
+      }
+    }
+
+    span {
+      font-size: 12px;
+    }
+  }
 `;

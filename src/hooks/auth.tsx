@@ -5,7 +5,7 @@ import { auth, firebase } from "../services/firebase";
 interface User {
   id: string;
   name: string;
-  avatar: string | null;
+  avatar: string;
 }
 
 interface IAuthContextData {
@@ -37,7 +37,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
       const data = {
         name: displayName || email!,
-        avatar: photoURL,
+        avatar: photoURL!,
         id: uid,
       };
 

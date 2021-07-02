@@ -16,25 +16,40 @@ export const Header = styled.header`
 
     > img {
       max-height: 45px;
+      margin-right: 48px;
+
+      @media (max-width: 550px) {
+        max-height: 38px;
+      }
     }
   }
 `;
 
 export const Content = styled.main`
   max-width: 800px;
+  padding: 24px;
   margin: 0 auto;
 
   > header {
     display: flex;
     align-items: center;
 
-    margin: 32px 0 24px;
+    margin-bottom: 24px;
 
-    h1 {
-      font-family: "Poppins", sans-serif;
-      font-weight: 700;
-      font-size: 24px;
-      color: ${({ theme }) => theme.colors.dark};
+    > div {
+      flex: 1;
+      margin-right: 24px;
+
+      h1 {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        color: ${({ theme }) => theme.colors.dark};
+
+        @media (max-width: 550px) {
+          font-size: 20px;
+        }
+      }
     }
 
     span {
@@ -45,6 +60,10 @@ export const Content = styled.main`
       color: ${({ theme }) => theme.colors.heading};
       font-weight: 500;
       font-size: 14px;
+
+      @media (max-width: 550px) {
+        font-size: 12px;
+      }
     }
   }
 
@@ -70,9 +89,35 @@ export const Content = styled.main`
       justify-content: space-between;
       align-items: center;
 
-      margin-top: 16px;
+      margin-top: 12px;
 
-      span {
+      > div {
+        display: flex;
+        align-items: center;
+
+        flex: 1;
+        margin-right: 24px;
+
+        img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+        }
+
+        span {
+          color: ${({ theme }) => theme.colors.dark};
+          margin-left: 8px;
+          font-weight: 500;
+          font-size: 14px;
+
+          max-width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+
+      > span {
         font-size: 14px;
         font-weight: 500;
         color: ${({ theme }) => theme.colors.darkGray};
@@ -91,6 +136,29 @@ export const Content = styled.main`
           &:hover {
             filter: brightness(0.8);
           }
+        }
+      }
+
+      @media (max-width: 500px) {
+        justify-content: flex-start;
+        align-items: stretch;
+        flex-direction: column-reverse;
+
+        > div {
+          margin-right: 0;
+
+          img {
+            width: 28px;
+            height: 28px;
+          }
+
+          span {
+            font-size: 14px;
+          }
+        }
+
+        > button {
+          margin-bottom: 12px;
         }
       }
     }
