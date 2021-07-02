@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { ThemeProvider } from "styled-components";
 import { ChakraProvider } from "@chakra-ui/react";
 
@@ -9,7 +10,7 @@ import { GlobalStyle } from "./styles/global";
 import { theme } from "./styles/themes";
 import { chakraTheme } from "./styles/themes/chakra";
 
-export const App: React.FC = () => {
+export const App: FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <ChakraProvider theme={chakraTheme}>

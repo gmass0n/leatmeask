@@ -25,6 +25,7 @@ export const Container = styled.button`
     justify-content: center;
 
     background: ${({ theme }) => theme.colors.primary};
+    border: 1px solid ${({ theme }) => theme.colors.primary};
     padding: 0 12px;
   }
 
@@ -55,6 +56,12 @@ export const Container = styled.button`
 
     span {
       font-size: 12px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    span {
+      display: none;
     }
   }
 `;

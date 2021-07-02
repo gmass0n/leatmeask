@@ -1,9 +1,10 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { ButtonVariant } from ".";
 
 interface ContainerProps {
   variant: ButtonVariant;
+  isOutlined: boolean;
 }
 
 export const Container = styled.button<ContainerProps>`
@@ -22,6 +23,14 @@ export const Container = styled.button<ContainerProps>`
   border: 0;
 
   transition: all 0.2s;
+
+  ${({ isOutlined, theme, variant }) =>
+    isOutlined &&
+    css`
+      background: ${theme.colors.shape};
+      border: 1px solid ${theme.colors[variant]};
+      color: ${theme.colors[variant]};
+    `}
 
   img {
     margin-right: 8px;
