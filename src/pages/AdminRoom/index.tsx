@@ -4,15 +4,18 @@ import { Tooltip, Spinner } from "@chakra-ui/react";
 
 import logoImg from "../../assets/images/logo.svg";
 import powerImg from "../../assets/images/power.svg";
+import deleteImg from "../../assets/images/delete.svg";
 
 import { Button } from "../../components/Button";
 import { RoomCode } from "../../components/RoomCode";
+import { Question } from "../../components/Question";
+import { QuestionButton } from "../../components/Question/styles";
 
 import { useAuth } from "../../hooks/auth";
+import { useRoom } from "../../hooks/room";
 
 import { Container, Header, Content } from "./styles";
-import { Question } from "../../components/Question";
-import { useRoom } from "../../hooks/room";
+import { database } from "../../services/firebase";
 
 interface ParamsProps {
   id: string;
@@ -23,6 +26,12 @@ export const AdminRoom: FC = () => {
 
   const { user } = useAuth();
   const { isLoading, questions, title } = useRoom(params.id);
+
+  async function handleDeleteQuestion(questionId: string): Promise<void> {
+    if (window.confirm("Tem certeza que você deseja excluir esta pergunta?")) {
+      await database.ref(`rooms/${params.id}/questions/${questionId}`).remove();
+    }
+  }
 
   return (
     <Container>
@@ -72,7 +81,16 @@ export const AdminRoom: FC = () => {
                     key={question.id}
                     author={question.author}
                     content={question.content}
-                  />
+                  >
+                    <Tooltip hasArrow label="Remover">
+                      <QuestionButton
+                        onClick={() => handleDeleteQuestion(question.id)}
+                        aria-label="Remover pergunta"
+                      >
+                        <img src={deleteImg} alt="Remover pergunta" />
+                      </QuestionButton>
+                    </Tooltip>
+                  </Question>
                 ))}
               </ul>
             </>
