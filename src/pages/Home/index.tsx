@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
 
@@ -10,15 +10,20 @@ import { Button } from "../../components/Button";
 
 import { useAuth } from "../../hooks/auth";
 
+import { database } from "../../services/firebase";
+
 import { Container, LeftBox, RightBox, Separator } from "./styles";
 
 export const Home: React.FC = () => {
+  const { user, signInWithGoogle } = useAuth();
+
   const toast = useToast();
   const history = useHistory();
 
-  const { user, signInWithGoogle } = useAuth();
+  const roomCodeRef = useRef<HTMLInputElement>(null);
 
   const [isSigningWithGoogle, setIsSigningWithGoogle] = useState(false);
+  const [isJoiningRoom, setIsJoiningRoom] = useState(false);
 
   async function handleCreateRoom(): Promise<void> {
     if (!user) {
@@ -40,6 +45,45 @@ export const Home: React.FC = () => {
     }
 
     history.push("/rooms/new");
+  }
+
+  async function handleJoinRoom(
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> {
+    try {
+      event.preventDefault();
+
+      setIsJoiningRoom(true);
+
+      const roomCode = roomCodeRef.current?.value;
+
+      if (roomCode?.trim() === "") return;
+
+      const roomRef = await database.ref(`rooms/${roomCode}`).get();
+
+      if (!roomRef.exists()) {
+        toast({
+          title: "Ops, ocorreu um imprevisto!",
+          description: "Não encontramos nenhuma sala com esse código.",
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+        });
+        return;
+      }
+
+      history.push(`/rooms/${roomCode}`);
+    } catch (error) {
+      toast({
+        title: "Ops, ocorreu um erro!",
+        description: "Não foi possível entrar em uma sala já existente.",
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      });
+    } finally {
+      setIsJoiningRoom(false);
+    }
   }
 
   return (
@@ -76,10 +120,16 @@ export const Home: React.FC = () => {
 
           <Separator>ou entre em uma sala</Separator>
 
-          <form>
-            <input type="text" placeholder="Digite o código da sala" />
+          <form onSubmit={handleJoinRoom}>
+            <input
+              type="text"
+              placeholder="Digite o código da sala"
+              ref={roomCodeRef}
+            />
 
-            <Button type="submit">Entrar na sala</Button>
+            <Button type="submit" isLoading={isJoiningRoom}>
+              Entrar na sala
+            </Button>
           </form>
         </div>
       </RightBox>
