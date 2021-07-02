@@ -114,6 +114,7 @@ export const RightBox = styled.main`
       font-size: 14px;
       color: ${({ theme }) => theme.colors.darkGray};
       margin-top: 16px;
+      font-weight: 500;
 
       a {
         color: ${({ theme }) => theme.colors.secondary};
