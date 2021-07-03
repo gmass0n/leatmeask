@@ -5,6 +5,7 @@ import { Tooltip, Spinner, useToast } from "@chakra-ui/react";
 import logoImg from "../../assets/images/logo.svg";
 import powerImg from "../../assets/images/power.svg";
 import deleteImg from "../../assets/images/delete.svg";
+import checkImg from "../../assets/images/check.svg";
 import closeImg from "../../assets/images/close.svg";
 
 import { Button } from "../../components/Button";
@@ -65,6 +66,31 @@ export const AdminRoom: FC = () => {
   function handleOpenDeleteQuestionModal(questionId: string): void {
     setCurrentQuestionId(questionId);
     deleteQuestionModalRef.current?.open();
+  }
+
+  async function handleCheckQuestionAsAnswered(
+    questionId: string
+  ): Promise<void> {
+    await database.ref(`rooms/${params.id}/questions/${questionId}`).update({
+      isAnswered: true,
+    });
+  }
+
+  async function toggleIsHighlightedQuestion(
+    questionId: string,
+    isHighlighted: boolean
+  ): Promise<void> {
+    if (isHighlighted) {
+      await database.ref(`rooms/${params.id}/questions/${questionId}`).update({
+        isHighlighted: false,
+      });
+
+      return;
+    }
+
+    await database.ref(`rooms/${params.id}/questions/${questionId}`).update({
+      isHighlighted: true,
+    });
   }
 
   async function handleDeleteQuestion(): Promise<void> {
@@ -138,7 +164,65 @@ export const AdminRoom: FC = () => {
                     key={question.id}
                     author={question.author}
                     content={question.content}
+                    isHighlighted={question.isHighlighted}
+                    isAnswered={question.isAnswered}
                   >
+                    {!question.isAnswered && (
+                      <>
+                        <Tooltip hasArrow label="Marcar como respondida">
+                          <QuestionButton
+                            onClick={() =>
+                              handleCheckQuestionAsAnswered(question.id)
+                            }
+                            aria-label="Marcar pergunta como respondida"
+                          >
+                            <img
+                              src={checkImg}
+                              alt="Marcar pergunta como respondida"
+                            />
+                          </QuestionButton>
+                        </Tooltip>
+
+                        <Tooltip
+                          hasArrow
+                          label={
+                            question.isHighlighted
+                              ? "Remover destaque"
+                              : "Destacar"
+                          }
+                        >
+                          <QuestionButton
+                            onClick={() =>
+                              toggleIsHighlightedQuestion(
+                                question.id,
+                                question.isHighlighted
+                              )
+                            }
+                            isActive={question.isHighlighted}
+                            aria-label="Dar destaque à pergunta"
+                          >
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M12 17.9999H18C19.657 17.9999 21 16.6569 21 14.9999V6.99988C21 5.34288 19.657 3.99988 18 3.99988H6C4.343 3.99988 3 5.34288 3 6.99988V14.9999C3 16.6569 4.343 17.9999 6 17.9999H7.5V20.9999L12 17.9999Z"
+                                stroke="#737380"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </QuestionButton>
+                        </Tooltip>
+                      </>
+                    )}
+
                     <Tooltip hasArrow label="Remover">
                       <QuestionButton
                         onClick={() =>
