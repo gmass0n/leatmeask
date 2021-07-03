@@ -59,7 +59,7 @@ export const NewRoom: FC = () => {
         authorId: user!.id,
       });
 
-      history.push(`/rooms/${firebaseRoom.key}`);
+      history.push(`/admin/rooms/${firebaseRoom.key}`);
     } catch (error) {
       toast({
         title: "Ops, ocorreu um erro!",

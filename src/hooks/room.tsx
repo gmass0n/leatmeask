@@ -44,6 +44,7 @@ interface FirebaseRoom {
 
 interface UseRoomResponse {
   title: string;
+  authorId: string;
   questions: QuestionProps[];
   isLoading: boolean;
 }
@@ -55,6 +56,7 @@ export const useRoom = (roomId: string): UseRoomResponse => {
   const { user } = useAuth();
 
   const [title, setTitle] = useState<string>("");
+  const [authorId, setAuthorId] = useState<string>("");
   const [questions, setQuestions] = useState<QuestionProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -128,13 +130,14 @@ export const useRoom = (roomId: string): UseRoomResponse => {
         (question) => !question.isHighlighted && !question.isAnswered
       );
 
-      setIsLoading(false);
+      setAuthorId(firebaseRoom.authorId);
       setTitle(firebaseRoom.title);
       setQuestions([
         ...highlightedQuestions,
         ...restQuestions,
         ...answeredQuestions,
       ]);
+      setIsLoading(false);
     });
 
     return () => {
@@ -145,6 +148,7 @@ export const useRoom = (roomId: string): UseRoomResponse => {
 
   return {
     questions,
+    authorId,
     title,
     isLoading,
   };

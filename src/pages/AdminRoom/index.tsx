@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 import { Tooltip, Spinner, useToast } from "@chakra-ui/react";
 
@@ -12,22 +12,24 @@ import { Button } from "../../components/Button";
 import { RoomCode } from "../../components/RoomCode";
 import { Question } from "../../components/Question";
 import { QuestionButton } from "../../components/Question/styles";
-
-import { useRoom } from "../../hooks/room";
-
-import { database } from "../../services/firebase";
-
-import { Container, Header, Content } from "./styles";
 import {
   ConfirmModal,
   ConfirmModalHandles,
 } from "../../components/ConfirmModal";
 
+import { useRoom } from "../../hooks/room";
+import { useAuth } from "../../hooks/auth";
+
+import { database } from "../../services/firebase";
+
+import { Container, Header, Content } from "./styles";
 interface ParamsProps {
   id: string;
 }
 
 export const AdminRoom: FC = () => {
+  const { user } = useAuth();
+
   const params = useParams<ParamsProps>();
   const history = useHistory();
   const toast = useToast();
@@ -35,11 +37,26 @@ export const AdminRoom: FC = () => {
   const closeRoomModalRef = useRef<ConfirmModalHandles>(null);
   const deleteQuestionModalRef = useRef<ConfirmModalHandles>(null);
 
-  const { isLoading, questions, title } = useRoom(params.id);
+  const { isLoading, questions, title, authorId } = useRoom(params.id);
 
   const [isClosingRoom, setIsClosingRoom] = useState(false);
   const [isDeletingQuestion, setIsDeletingQuestion] = useState(false);
   const [currentQuestionId, setCurrentQuestionId] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && user!.id !== authorId) {
+      toast({
+        title: "Ops, ocorreu um imprevisto!",
+        description: "Você não tem acesso à essa página.",
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+      });
+
+      history.push("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, authorId, user?.id]);
 
   async function handleCloseRoom(): Promise<void> {
     try {
