@@ -118,9 +118,23 @@ export const useRoom = (roomId: string): UseRoomResponse => {
         }
       );
 
+      const highlightedQuestions = parsedQuestions.filter(
+        (question) => question.isHighlighted && !question.isAnswered
+      );
+      const answeredQuestions = parsedQuestions.filter(
+        (question) => question.isAnswered
+      );
+      const restQuestions = parsedQuestions.filter(
+        (question) => !question.isHighlighted && !question.isAnswered
+      );
+
       setIsLoading(false);
       setTitle(firebaseRoom.title);
-      setQuestions(parsedQuestions);
+      setQuestions([
+        ...highlightedQuestions,
+        ...restQuestions,
+        ...answeredQuestions,
+      ]);
     });
 
     return () => {
